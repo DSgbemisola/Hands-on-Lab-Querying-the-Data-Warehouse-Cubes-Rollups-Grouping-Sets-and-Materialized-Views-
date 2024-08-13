@@ -239,10 +239,64 @@ The output can be seen in the image below:
 
 ![image](https://github.com/user-attachments/assets/166bd28f-7323-49f9-87a5-6dde5cf48150)
 
-# Task 7: Create a rollup for the columns country, category, sum(billedamount).
+# Task H: Create a rollup for the columns country, category, sum(billedamount).
 
-      
+To tackle this problem, I isssued the following query statement:
 
+      SELECT year,quartername, sum(billedamount) AS totalbilledamount
+      FROM "FactBilling"
+      LEFT JOIN "DimCustomer"
+      ON "FactBilling".customerid = "DimCustomer".customerid
+      LEFT JOIN "DimMonth"
+      ON "FactBilling".monthid="DimMonth".monthid
+      GROUP BY rollup(year, quartername)
+      ORDER BY year, quartername;
 
+The output can be seen in the image below:
 
+![image](https://github.com/user-attachments/assets/ff93daf0-b62f-44e4-b408-0dbf7bf6b903)
+
+# Task I: Create a cube for the columns year,country, category, sum(billedamount).
+
+  To tackle this problem, I isssued the following query statement:
   
+      SELECT year,quartername, sum(billedamount) AS totalbilledamount
+      FROM "FactBilling"
+      LEFT JOIN "DimCustomer"
+      ON "FactBilling".customerid = "DimCustomer".customerid
+      LEFT JOIN "DimMonth"
+      ON "FactBilling".monthid="DimMonth".monthid
+      GROUP BY CUBE (year, quartername)
+      ORDER BY year, category;
+
+The output can be seen in the image below:
+
+![image](https://github.com/user-attachments/assets/d50646bb-b327-469c-b846-bce5c7462a0a)
+
+# Task J: Create an Materialized views named average_billamount with columns year, quarter, category, country, average_bill_amount.
+
+  To tackle this problem, I isssued the following query statement:
+
+      CREATE MATERIALIZED VIEW average_billamount (year,quarter,category,country, average_bill_amount) AS
+       (SELECT   year,quarter,category,country, avg(billedamount) AS average_bill_amount
+       FROM "FactBilling"
+       LEFT JOIN  "DimCustomer"
+       ON "FactBilling".customerid =  "DimCustomer".customerid
+       LEFT JOIN "DimMonth"
+       ON "FactBilling".monthid="DimMonth".monthid
+       GROUP BY year,quarter,category,country
+       );
+
+![image](https://github.com/user-attachments/assets/98c30271-cd3d-4835-aab9-41dcd8a559c8)
+
+To populate the Materialized views countrystats, I executed the sql statement below:
+
+      REFRESH MATERIALIZED VIEW countrystats;
+
+Alternatively, right-click on the Materialized view and then select "Refresh". After refreshing, right-click again to chose View > First 100 Rows
+
+The output can be seen in the image below:
+
+![image](https://github.com/user-attachments/assets/b0334b34-4b76-4db5-8d41-a576aeee44d4)
+
+
